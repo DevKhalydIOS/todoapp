@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:state_managment_todoapp/models/task_mode.dart';
+
+
+///Widgets can be ful o less. The thing most important is know how to use it
 
 class CheckBoxTile extends StatefulWidget {
-  String assigment;
+  //Make some fucntions here to get more capacibility
+  final String assigment;
 
   CheckBoxTile({this.assigment = 'No defined'});
 
@@ -22,9 +28,13 @@ class _CheckBoxTileState extends State<CheckBoxTile> {
   }
 
   void setValue(bool newValue) {
-    setState(() {
-      isActive = newValue;
-    });
+
+    if (newValue) {
+      final list = Provider.of<TaskNotifier>(context).taskList;
+      if (list.isEmpty) return;
+      //Changes this types. Make to work
+    }
+
   }
 
   @override

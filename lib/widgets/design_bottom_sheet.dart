@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:state_managment_todoapp/utils/utils_functios.dart';
 
 class BottomSheetDesign extends StatelessWidget {
+  final mainColor = Color.fromRGBO(102, 193, 254, 1);
 
+  final controller = TextEditingController();
 
-  Color mainColor = Color.fromRGBO(102, 193, 254, 1);
+  final Function(String task) onPressed;
 
+  BottomSheetDesign({@required this.onPressed});
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
@@ -42,6 +45,7 @@ class BottomSheetDesign extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 15),
             child: TextField(
               style: TextStyle(),
+              controller: controller,
             ),
           ),
           SizedBox(
@@ -49,7 +53,13 @@ class BottomSheetDesign extends StatelessWidget {
           ),
           RaisedButton(
             padding: EdgeInsets.symmetric(horizontal: 100, vertical: 8.5),
-            onPressed: () {},
+            onPressed: () {
+              String task = controller.text;
+
+              if (task.isEmpty) return;
+
+              onPressed(task);
+            },
             child: Text(
               'Add',
               style: TextStyle(color: Colors.white, fontSize: 25),

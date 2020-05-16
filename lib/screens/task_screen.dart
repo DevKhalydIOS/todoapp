@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:state_managment_todoapp/models/task_mode.dart';
 import 'package:state_managment_todoapp/widgets/checkbox_tile_custom.dart';
 import 'package:state_managment_todoapp/widgets/design_bottom_sheet.dart';
 
@@ -34,8 +36,19 @@ class _TaskScreenState extends State<TaskScreen> {
   showBottomSheet() => showModalBottomSheet(
         isScrollControlled: true,
         context: context,
-        builder: (c) => BottomSheetDesign(),
+        builder: (c) => BottomSheetDesign(
+          onPressed: addAnItem,
+        ),
       );
+
+  addAnItem(String task) {
+    // Provider.of<TaskNotifier>(context).addAnItem();
+    final taskModel = new CheckBoxTile(
+      assigment: task,
+    );
+    Provider.of<TaskNotifier>(context,listen: false).addAnItem(taskModel);
+    Navigator.pop(context);
+  }
 
   Widget str() => Column(
         children: <Widget>[
@@ -76,9 +89,11 @@ class _TaskScreenState extends State<TaskScreen> {
                               fontWeight: FontWeight.bold,
                               fontSize: 60),
                         ),
-                        Text(
-                          '12 Tasks',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        Consumer<TaskNotifier>(
+                          builder: (context, task, child) => Text(
+                            '${task.taskList.length} Tasks',
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
                         ),
                       ],
                     ),
@@ -99,9 +114,8 @@ class _TaskScreenState extends State<TaskScreen> {
           ))
         ],
       );
-   
 
-  Widget list() => ListView(
+  Widget list2() => ListView(
         padding: EdgeInsets.only(top: 25),
         children: <Widget>[
           CheckBoxTile(
@@ -111,21 +125,26 @@ class _TaskScreenState extends State<TaskScreen> {
         ],
       );
 
-  Widget modelTask(bool isSTRIKETHROUGH) {
-    return CheckboxListTile(
-      value: isSTRIKETHROUGH,
-      onChanged: (value) {},
-      checkColor: Colors.white,
-      title: Text(
-        'Task 1',
-        style: TextStyle(
-            color: Colors.black,
-            decoration: isSTRIKETHROUGH
-                ? TextDecoration.lineThrough
-                : TextDecoration.none),
-      ),
-      activeColor: Colors.lightBlueAccent,
-      selected: true,
-    );
-  }
+  Widget list() => Consumer<TaskNotifier>(
+        builder: (context, task, child) {
+          bool isEmptyList = task.taskList.isEmpty;
+
+          int lenghtList = task.taskList.length;
+
+          return isEmptyList
+              ? Center(
+                  child: Text('No task for today',
+                      style: TextStyle(
+                        color: Colors.black,
+                      )))
+              : ListView.builder(
+                  padding: EdgeInsets.only(top: 25),
+                  itemBuilder: itemBuilder,
+                  itemCount: lenghtList,
+                );
+        },
+      );
+
+  Widget itemBuilder(BuildContext _, int i) => Consumer<TaskNotifier>(
+      builder: (context, task, child) => task.taskList[i]);
 }
