@@ -18,8 +18,8 @@ class CheckBoxTile extends StatefulWidget {
 class _CheckBoxTileState extends State<CheckBoxTile> {
   //This allow dont send any value by param
   bool isActive = false;
-
   String assigment;
+  
 
   @override
   void initState() {
@@ -28,9 +28,10 @@ class _CheckBoxTileState extends State<CheckBoxTile> {
   }
 
   void setValue(bool newValue) {
-
+    
+    //This should use Consumer <Check Docs>
     if (newValue) {
-      final list = Provider.of<TaskNotifier>(context).taskList;
+      final list = Provider.of<TaskNotifier>(context,listen: false).taskList;
       if (list.isEmpty) return;
       //Changes this types. Make to work
     }

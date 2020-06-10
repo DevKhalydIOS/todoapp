@@ -8,11 +8,13 @@ class TaskNotifier extends ChangeNotifier {
   List<CheckBoxTile> _taskList = new List();
 
   List<CheckBoxTile> get taskList => _taskList;
+  
 
   void deleteAnItem(CheckBoxTile item) {
     _taskList.remove(item);
     notifyListeners();
   }
+
 
   void addAnItem(CheckBoxTile item) {
     _taskList.add(item);

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:state_managment_todoapp/models/task_mode.dart';
+import 'package:state_managment_todoapp/utils/utils_functios.dart';
 import 'package:state_managment_todoapp/widgets/checkbox_tile_custom.dart';
 import 'package:state_managment_todoapp/widgets/design_bottom_sheet.dart';
 
+//This screen will be become in stateless
 class TaskScreen extends StatefulWidget {
+
+  static final tag  = 'task';
+
   @override
   _TaskScreenState createState() => _TaskScreenState();
 }
@@ -21,11 +26,11 @@ class _TaskScreenState extends State<TaskScreen> {
 
     return Scaffold(
         key: keyScaffold,
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: primaryColor,
         body: str(),
         floatingActionButton: FloatingActionButton(
           onPressed: () => showBottomSheet(),
-          backgroundColor: Colors.lightBlue,
+          backgroundColor: acentColor,
           child: Icon(
             Icons.add,
             color: Colors.white,
@@ -46,7 +51,7 @@ class _TaskScreenState extends State<TaskScreen> {
     final taskModel = new CheckBoxTile(
       assigment: task,
     );
-    Provider.of<TaskNotifier>(context,listen: false).addAnItem(taskModel);
+    Provider.of<TaskNotifier>(context, listen: false).addAnItem(taskModel);
     Navigator.pop(context);
   }
 
