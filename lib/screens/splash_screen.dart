@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 35,
             ),
             Text(
-              'TO - DO',
+              "Let's TODO",
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
