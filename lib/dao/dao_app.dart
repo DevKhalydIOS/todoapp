@@ -40,16 +40,24 @@ class UserDAO extends DatabaseAccessor<AppDatabase> with _$UserDAOMixin {
   updateNote(Note note) =>
       (update(notes)..where((t) => t.id.equals(note.id))).write(note);
 
-  
   deleteUniqueNote(Note note) =>
       (delete(notes)..where((t) => t.id.equals(note.id))).delete(note);
 
-
   Stream<List<Note>> watchNotes() => select(notes).watch();
-
 
   Future insertNote(Note note) => into(notes).insert(note);
 
-  
+  //UserData functions
+  //Note: Always try to write with an extra 's' a
+  //table to avoid this type of erros
+
+  ///Get the first item from USER Db
+  updateDataUser(UserDataData d) => (update(userData)..where((u) => u.id.equals(d.id))).write(d);
+
+  ///Use a unique time
+  insertUser(UserDataData d) => into(userData).insert(d);
+
+
+  Future<List<UserDataData>> getUserData() => select(userData).get();
 
 }

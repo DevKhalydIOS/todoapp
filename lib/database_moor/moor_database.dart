@@ -39,9 +39,11 @@ class Notes extends Table {
 //This maybe just can use one row
 class UserData extends Table {
 
+  //Just update the values 
   TextColumn get id => text().withDefault(Constant('user_${getDate()}'))();
   BoolColumn get isDarkMode => boolean().withDefault(const Constant(false))();
   BoolColumn get isGoogleSignIn => boolean().withDefault(const Constant(false))();
+
 
   @override
   Set<Column> get primaryKey => {id, isDarkMode};

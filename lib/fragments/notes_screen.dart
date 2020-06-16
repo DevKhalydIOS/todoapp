@@ -18,6 +18,12 @@ class _NotesScreenState extends State<NotesScreen> {
   Stream<List<Note>> streamsNotes;
 
   @override
+  void initState() {
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) => Scaffold(
         key: keyScaffold,
         backgroundColor: primaryColor,
@@ -37,6 +43,7 @@ class _NotesScreenState extends State<NotesScreen> {
   //Add a note to notes table
   onPressed() {
 
+    
 
 
   }
