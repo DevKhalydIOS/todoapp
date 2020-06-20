@@ -590,6 +590,8 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
   }
 }
 
+
+///This name was created by the command. If you want to avoid this error. You can use an annotation with database name
 class UserDataData extends DataClass implements Insertable<UserDataData> {
   final String id;
   final bool isDarkMode;

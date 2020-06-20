@@ -23,6 +23,8 @@ First we need create the draft table in this case the 'drafts' (Read the code co
 
 ```dart
 
+//Use this if you want to change table name when this one is generated
+@DataClassName('ShoppingCartEntry')
 class Tasks extends Table {
 
   //See the docs to see more info about the columns

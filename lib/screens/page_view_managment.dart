@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:state_managment_todoapp/fragments/notes_screen.dart';
+import 'package:state_managment_todoapp/fragments/settings_fragment.dart';
 import 'package:state_managment_todoapp/fragments/task_screen.dart';
 import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
 
 //This class handle the main screens
 class PageViewManegment extends StatefulWidget {
+  
   static final tag = 'pageViewM';
 
   @override
@@ -20,6 +22,7 @@ class _PageViewManegmentState extends State<PageViewManegment> {
   final views = <Widget>[
     TaskScreen(),
     NotesScreen(),
+    SettingsFragment()
   ];
 
   @override

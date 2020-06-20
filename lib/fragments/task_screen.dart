@@ -15,6 +15,7 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+  
   final _listKey = GlobalKey<AnimatedListState>();
 
   final keyScaffold = new GlobalKey<ScaffoldState>();
@@ -27,7 +28,6 @@ class _TaskScreenState extends State<TaskScreen> {
 
   @override
   void initState() {
-    //TODO
     setupOfflineMode();
     super.initState();
   }
@@ -37,7 +37,7 @@ class _TaskScreenState extends State<TaskScreen> {
     bool isAlreadyUpdate = false;
 
     streamsTasks =
-        Provider.of<DatabaseNotifier>(context, listen: false).getTasks();
+        Provider.of<DatabaseNotifier>(context, listen: false).watchTasks();
 
     streamsTasks.listen((list) {
       Provider.of<DatabaseNotifier>(context, listen: false)
@@ -45,6 +45,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
       tasksOutside = list;
 
+      //TODO: Fix this code
       if (!isAlreadyUpdate) {
         isAlreadyUpdate = !isAlreadyUpdate;
 

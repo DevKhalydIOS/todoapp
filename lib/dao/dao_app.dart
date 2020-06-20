@@ -15,49 +15,51 @@ part 'dao_app.g.dart';
 //DAO = Data Access Objects
 @UseDao(tables: [Tasks, Notes, UserData])
 class UserDAO extends DatabaseAccessor<AppDatabase> with _$UserDAOMixin {
+
   final AppDatabase db;
 
   UserDAO(this.db) : super(db);
-
+  
   //Fix by the docs https://moor.simonbinder.eu/docs/getting-started/writing_queries/
-  updateTask(Task task) =>
+  updateTask(Task task) async => await
       (update(tasks)..where((t) => t.id.equals(task.id))).write(task);
 
   //Delete
   deleteTasksCompletes() => (delete(tasks)..where((t) => t.isComplete)).go();
 
   //Functions to be called
-  Future<List<Task>> getTasks() => select(tasks).get();
+  Future<List<Task>> getTasks() async => await select(tasks).get();
   //Task is the class generated and tasks is the getter
 
   Stream<List<Task>> watchTasks() => select(tasks).watch();
 
   //Note: Task is the class generated no the class who extends from Table else from DataClass
-  Future<int> insertTask(Task task) => into(tasks).insert(task);
+  Future<int> insertTask(Task task) async => await into(tasks).insert(task);
   //Table name and the class
 
   //Note Functions
-  updateNote(Note note) =>
+  Future updateNote(Note note) async => await 
       (update(notes)..where((t) => t.id.equals(note.id))).write(note);
 
-  deleteUniqueNote(Note note) =>
+  Future deleteUniqueNote(Note note) async => await
       (delete(notes)..where((t) => t.id.equals(note.id))).delete(note);
 
-  Stream<List<Note>> watchNotes() => select(notes).watch();
+  Stream<List<Note>> watchNotes()   => select(notes).watch();
 
-  Future insertNote(Note note) => into(notes).insert(note);
+  Future insertNote(Note note) async => await into(notes).insert(note);
+
+  Future<List<Note>> getNotes() async => await select(notes).get();
 
   //UserData functions
   //Note: Always try to write with an extra 's' a
   //table to avoid this type of erros
 
-  ///Get the first item from USER Db
-  updateDataUser(UserDataData d) => (update(userData)..where((u) => u.id.equals(d.id))).write(d);
+  ///Update all the table in this case that dont metters.
+  Future updateDataUser(UserDataData d) async => await update(userData).replace(d);
 
   ///Use a unique time
-  insertUser(UserDataData d) => into(userData).insert(d);
+  Future insertUser(UserDataData d) async => await into(userData).insert(d);
 
-
-  Future<List<UserDataData>> getUserData() => select(userData).get();
-
+  ///The first item should be the user to storage
+  Future<List<UserDataData>> getUserData() async => await select(userData).get();
 }

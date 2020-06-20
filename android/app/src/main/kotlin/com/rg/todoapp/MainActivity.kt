@@ -1,4 +1,4 @@
-package com.example.state_managment_todoapp
+package com.rg.todoapp
 
 import io.flutter.embedding.android.FlutterActivity
 
