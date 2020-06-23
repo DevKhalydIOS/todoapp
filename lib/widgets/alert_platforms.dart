@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
 
-///This widget returns an Alert to specify plattform
+///This dialog is for informationb
+///(This widget returns an Alert to specify plattform)
 class AlertPlatform extends StatelessWidget {
   
   final String title, description, textPositive, textNegative;
@@ -21,6 +22,7 @@ class AlertPlatform extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     final androidMaterial = AlertDialog(
       title: Text(title),
       content: Text(description),

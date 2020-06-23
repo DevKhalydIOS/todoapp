@@ -15,6 +15,7 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+
   
   final _listKey = GlobalKey<AnimatedListState>();
 
@@ -36,8 +37,9 @@ class _TaskScreenState extends State<TaskScreen> {
     //When the app is on mode offline use this flow
     bool isAlreadyUpdate = false;
 
-    streamsTasks =
-        Provider.of<DatabaseNotifier>(context, listen: false).watchTasks();
+    streamsTasks = Provider.of<DatabaseNotifier>(context, listen: false)
+        .database
+        .watchTasks();
 
     streamsTasks.listen((list) {
       Provider.of<DatabaseNotifier>(context, listen: false)
@@ -45,7 +47,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
       tasksOutside = list;
 
-      //TODO: Fix this code
+      //TODO: Fix this code (Erase this code)
       if (!isAlreadyUpdate) {
         isAlreadyUpdate = !isAlreadyUpdate;
 
@@ -112,7 +114,8 @@ class _TaskScreenState extends State<TaskScreen> {
     );
 
     await Provider.of<DatabaseNotifier>(context, listen: false)
-        .addTask(taskModel);
+        .database
+        .insertTask(taskModel);
     //Maybe this thown an error
     _listKey.currentState.insertItem(0, duration: Duration(milliseconds: 450));
     Navigator.pop(context);
@@ -133,9 +136,9 @@ class _TaskScreenState extends State<TaskScreen> {
                     height: 80,
                   ),
                   Container(
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(5.0),
                     child: Icon(
-                      Icons.menu,
+                      Icons.calendar_today,
                       color: Colors.white,
                       size: 35,
                     ),
@@ -183,8 +186,17 @@ class _TaskScreenState extends State<TaskScreen> {
         stream: streamsTasks,
         builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
           if (snapshot.hasData) {
-            //Total items
-            //Add the value to te Provider
+            final tasks = snapshot.data;
+
+            if (tasks.isEmpty)
+              return Container(
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Text('No tasks')],
+                ),
+              );
+
             return AnimatedList(
               key: _listKey,
               padding: EdgeInsets.only(top: 25),
@@ -207,12 +219,7 @@ class _TaskScreenState extends State<TaskScreen> {
       );
 
   Widget itemBuilder(BuildContext _, int i, animation) {
-    if (tasksOutside.isEmpty)
-      return Center(
-          child: Text('No tasks for today',
-              style: TextStyle(
-                color: Colors.black,
-              )));
+    
 
     var reversedList = new List.from(tasksOutside.reversed);
 

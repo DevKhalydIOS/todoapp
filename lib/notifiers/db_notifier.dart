@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:state_managment_todoapp/database_moor/moor_database.dart';
 
-
 //Note: This class shouldn't contains future methods beacause there is a class for that
+//XP Developer: This just handle values no futures awaiting for it. Just values
 class DatabaseNotifier extends ChangeNotifier {
   int _totalTask = 0;
+  int _totalNotes = 0;
+
   AppDatabase _dbInstance = new AppDatabase();
   UserDataData _userData;
 
@@ -15,52 +17,26 @@ class DatabaseNotifier extends ChangeNotifier {
   //Getters//This a
   get database => _dbInstance.userDAO;
   int get tasks => _totalTask;
+  int get notes => _totalNotes;
+
   UserDataData get userData => _userData ?? null;
 
   set userData(UserDataData data) => _userData = data;
 
-  
-  //Methods
-  Stream<List<Task>> watchTasks() => database.watchTasks();
-
-  Future<List<Task>> getTasks() async => await database.getTasks();
-
-  Future<bool> addTask(Task task) async =>
-      await database.insertTask(task) >= 0 ? true : false;
-
-  updateTask(Task task) => database.updateTask(task);
-
-  deleteTasksCompletes() => database.deleteTasksCompletes();
-
-  //Notes Functions
-
-  updateNote(Note note) => database.updateNote(note);
-
-  deleteNote(Note note) => database.deleteUniqueNote(note);
-
-  Stream<List<Note>> watchNotes() => database.watchNotes();
-
-  Future<List<Note>> getNotes() async => await database.getNotes();
-
-  Future insertNote(Note note) => database.insertNote(note);
-
-  //UserData Functions
-  updateDataUser(UserDataData user) => database.updateDataUser(user);
-
-  insertUser(UserDataData user) => database.insertUser(user);
-
-  //This can throw an error
-  Future<List<UserDataData>> getUserData()  async =>  await database.getUserData();
-
-  //TODO: Create a new method that returns the unique user
-
-  Future<UserDataData> userLocal() async {
-    final list =  await getUserData();    
-    return list[0] ?? null;
-  }
+  ///Update the user info. Call this method when update the user data in the local storage
+  void updateInfoUserLocal(UserDataData u) => _userData = u;
 
   void updateTotalTask(int current) {
     _totalTask = current;
+    //This need notify to the listeners to update the ui
     notifyListeners();
   }
+
+  void updateTotalNotes(int current) {
+    _totalNotes = current;
+    //This need notify to the listeners to update the ui
+    notifyListeners();
+  }
+
+
 }

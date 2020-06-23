@@ -11,15 +11,16 @@ class GoogleSignInProvider {
     ],
   );
 
-  Future<GoogleSignInAccount> signOut() async => await  _googleSignIn.disconnect();
-  
+  Future<GoogleSignInAccount> signOut() async =>
+      await _googleSignIn.disconnect();
+
   //This could  return null
-  GoogleSignInAccount get currentUser => _currentUser;
+  GoogleSignInAccount get currentUser => _currentUser ?? null;
 
   ///This could  return null
   Future<GoogleSignInAccount> get signIn async {
     GoogleSignInAccount _user = await _googleSignIn.signIn();
-
+    
     if (_user != null) _currentUser = _user;
 
     return _currentUser ?? null;
@@ -36,5 +37,8 @@ class GoogleSignInProvider {
 
   @override
   String toString() => _googleSignIn.toString();
+
+
+
 
 }

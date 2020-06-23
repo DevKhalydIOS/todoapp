@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:state_managment_todoapp/database_moor/moor_database.dart';
 import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
 import 'package:state_managment_todoapp/utils/utils_functios.dart';
-import 'package:state_managment_todoapp/widgets/icon_app.dart';
+import 'package:state_managment_todoapp/widgets/alert_notes.dart';
 
 class NotesScreen extends StatefulWidget {
   @override
@@ -11,14 +11,24 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
-
   final keyScaffold = new GlobalKey<ScaffoldState>();
   final _listKey = GlobalKey<AnimatedListState>();
+
+  List<Note> notesOutside = new List();
 
   Stream<List<Note>> streamsNotes;
 
   @override
   void initState() {
+    streamsNotes = Provider.of<DatabaseNotifier>(context, listen: false)
+        .database
+        .watchNotes();
+
+    streamsNotes.listen((List<Note> notes) {
+      Provider.of<DatabaseNotifier>(context, listen: false)
+          .updateTotalNotes(notes.length);
+      notesOutside = notes;
+    });
 
     super.initState();
   }
@@ -31,7 +41,7 @@ class _NotesScreenState extends State<NotesScreen> {
         floatingActionButton: fab(),
       );
 
-  fab() => FloatingActionButton(
+  Widget fab() => FloatingActionButton(
         onPressed: onPressed,
         backgroundColor: acentColor,
         child: Icon(
@@ -41,12 +51,11 @@ class _NotesScreenState extends State<NotesScreen> {
       );
 
   //Add a note to notes table
-  onPressed() {
-
-    
-
-
-  }
+  onPressed() => showDialogCustom(
+      context,
+      AlertNotes(
+        listKey: _listKey,
+      ));
 
   Widget str() => Column(
         children: <Widget>[
@@ -63,16 +72,12 @@ class _NotesScreenState extends State<NotesScreen> {
                     height: 80,
                   ),
                   Container(
-                    padding: EdgeInsets.all(10),
-                    child: IconApp(
-                      radius: 20,
-                      sizeIcon: 30,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                  ),
+                      padding: EdgeInsets.all(5.0),
+                      child: Icon(
+                        Icons.calendar_today,
+                        color: Colors.white,
+                        size: 35,
+                      )),
                   Expanded(
                       child: Padding(
                     padding: EdgeInsets.only(top: 35),
@@ -88,7 +93,7 @@ class _NotesScreenState extends State<NotesScreen> {
                         ),
                         Consumer<DatabaseNotifier>(
                             builder: (_, data, child) => Text(
-                                  'Update Notes',
+                                  '${data.notes} Notes',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 20),
                                 ))
@@ -112,10 +117,56 @@ class _NotesScreenState extends State<NotesScreen> {
         ],
       );
 
-  Widget list() => Center(
-        child: Text(
-          'Gettings note (Creating methosd)',
-          textAlign: TextAlign.center,
-        ),
+  Widget list() => StreamBuilder(
+        stream: streamsNotes,
+        builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
+          if (snapshot.hasData) {
+            final notes = snapshot.data;
+
+            if (notes.isEmpty)
+              return Container(
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Text('No notes')],
+                ),
+              );
+
+            return AnimatedList(
+              key: _listKey,
+              padding: EdgeInsets.only(top: 25),
+              itemBuilder: itemBuilder,
+              initialItemCount: notesOutside.length,
+            );
+          } else {
+            if (!snapshot.hasData) {
+              return Center(
+                  child: Text('No notes',
+                      style: TextStyle(
+                        color: Colors.black,
+                      )));
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          }
+        },
       );
+      
+  //Try to fix else use normal listview
+  Widget itemBuilder(BuildContext _, int i, animation) {
+    List<Note> reversedList = new List.from(notesOutside.reversed);
+
+    final item = reversedList[i];
+
+    final myTween = Tween<Offset>(
+      begin: const Offset(-1.0, 0.0),
+      end: Offset.zero,
+    );
+
+    return SlideTransition(
+        position: animation.drive(myTween),
+        child: ListTile(
+          title: Text(item.note),
+        ));
+  }
 }

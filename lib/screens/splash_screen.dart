@@ -1,7 +1,10 @@
+import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+
+import 'package:google_sign_in/google_sign_in.dart';
+
 import 'package:state_managment_todoapp/database_moor/moor_database.dart';
 import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
 import 'package:state_managment_todoapp/notifiers/google_notifier.dart';
@@ -10,8 +13,6 @@ import 'package:state_managment_todoapp/screens/page_view_managment.dart';
 import 'package:state_managment_todoapp/utils/utils_functios.dart';
 import 'package:state_managment_todoapp/widgets/alert_platforms.dart';
 import 'package:state_managment_todoapp/widgets/icon_app.dart';
-
-import 'dart:io' show Platform;
 
 class SplashScreen extends StatefulWidget {
   static final tag = 'ss';
@@ -25,9 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-
     Future.delayed(Duration(milliseconds: 1650), () async {
-
       UserDataData user = await getUserActually();
 
       assert(user != null, 'Please fix the user local');
@@ -37,17 +36,15 @@ class _SplashScreenState extends State<SplashScreen> {
         //Maybe this can be an error
         debugPrint('Error');
       } else {
-
-        //The user data is always around the app
+        //Saving the user info
         Provider.of<DatabaseNotifier>(context, listen: false).userData = user;
 
         bool userHasData = await isUserWithData();
 
         debugPrint('THe user has data $userHasData');
-        
+
         //Login With Google
         if (!userHasData) await showDialogs(user);
-
       }
 
       //Use provider to pass the data
@@ -58,15 +55,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<bool> isUserWithData() async {
-    List notes =
-        await Provider.of<DatabaseNotifier>(context, listen: false).getNotes();
+    List notes = await Provider.of<DatabaseNotifier>(context, listen: false)
+        .database
+        .getNotes();
 
-    List task =
-        await Provider.of<DatabaseNotifier>(context, listen: false).getTasks();
+    List task = await Provider.of<DatabaseNotifier>(context, listen: false)
+        .database
+        .getTasks();
 
     return notes?.isNotEmpty ?? false || task?.isNotEmpty ?? false;
   }
-
 
   Future showDialogs(UserDataData user) async {
     bool wasShowGoogleSignIn = user.isGoogleSignIn;
@@ -149,10 +147,14 @@ class _SplashScreenState extends State<SplashScreen> {
         );
 
         //Updating the local db
-        Provider.of<DatabaseNotifier>(context, listen: false)
+        await Provider.of<DatabaseNotifier>(context, listen: false)
+            .database
             .updateDataUser(_updateUser);
 
-        debugPrint( 'New user info:\n'+_updateUser.toString());
+        //When the local user is update in the db also this should be update into the Provider
+        Provider.of<DatabaseNotifier>(context, listen: false)
+            .updateInfoUserLocal(_updateUser);
+            
       }
       isFinished = true;
     }
@@ -194,6 +196,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<UserDataData> getUserActually() async {
     List<UserDataData> data =
         await Provider.of<DatabaseNotifier>(context, listen: false)
+            .database
             .getUserData();
 
     if (data.isEmpty) {
@@ -207,6 +210,7 @@ class _SplashScreenState extends State<SplashScreen> {
       //Always use the operator ??  to avoid posible errors
 
       await Provider.of<DatabaseNotifier>(context, listen: false)
+          .database
           .insertUser(user);
 
       return user;

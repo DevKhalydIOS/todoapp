@@ -51,19 +51,9 @@ class _CheckBoxTileState extends State<CheckBoxTile> {
 
 
           var wasUpdate =  Provider.of<DatabaseNotifier>(context, listen: false)
-              .updateTask(updateObjetc);
+              .database.updateTask(updateObjetc);
           
           print('Returned $wasUpdate');
-
-          /*if (wasUpdate && !isComplete){
-
-            print('Just update when isComplete is False');
-
-          }else if (!wasUpdate && isComplete){
-            print('No update when isComplete is True');
-          }else{
-            print('Fix logic');
-          }*/
 
 
         },

@@ -55,7 +55,7 @@ class UserDAO extends DatabaseAccessor<AppDatabase> with _$UserDAOMixin {
   //table to avoid this type of erros
 
   ///Update all the table in this case that dont metters.
-  Future updateDataUser(UserDataData d) async => await update(userData).replace(d);
+  Future updateDataUser(UserDataData d) async => await update(userData).write(d);
 
   ///Use a unique time
   Future insertUser(UserDataData d) async => await into(userData).insert(d);

@@ -16,16 +16,10 @@ nextPageRemoveStack(BuildContext context, String pageTag) =>
     );
 
 ///This could return anything
-Future<dynamic> showDialogCustom(BuildContext context, Widget dialog) async =>
+Future<dynamic> showDialogCustom(BuildContext context, Widget dialog,
+        {bool barrierDismissible = false}) async =>
     await showDialog(
-      barrierDismissible: false,
+      barrierDismissible: barrierDismissible,
       context: context,
       builder: (context) => dialog,
     );
-
-
-
-
-
-
-

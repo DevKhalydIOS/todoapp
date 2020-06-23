@@ -29,7 +29,7 @@ class _PageViewManegmentState extends State<PageViewManegment> {
   void initState() {
     //Before enter into the main screens
     Provider.of<DatabaseNotifier>(context, listen: false)
-        .deleteTasksCompletes();
+        .database.deleteTasksCompletes();
     super.initState();
   }
 
