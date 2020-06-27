@@ -6,44 +6,23 @@ import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
 ///Show an alert to add notes
 class AlertNotes extends StatefulWidget {
 
-  GlobalKey<AnimatedListState> listKey;
-
-  AlertNotes({@required  this.listKey});
+  AlertNotes();
 
   @override
   _AlertNotesState createState() => _AlertNotesState();
+  
 }
 
 class _AlertNotesState extends State<AlertNotes> {
-  GlobalKey<AnimatedListState> listKey;
-
   final controller = new TextEditingController();
   bool isChecked = false;
   bool isEmpty = false;
-
-  @override
-  void initState() {
-    listKey = widget.listKey;
-    super.initState();
-  }
 
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
   }
-
-  @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: Text('Add note'),
-        content: content(),
-        elevation: 16.0,
-        actions: [
-          FlatButton(
-              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
-          FlatButton(onPressed: onAffirmativePressed, child: Text('Add')),
-        ],
-      );
 
   Widget content() => Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,6 +78,17 @@ class _AlertNotesState extends State<AlertNotes> {
         .insertNote(n);
 
     Navigator.pop(context);
-    listKey.currentState.insertItem(0, duration: Duration(milliseconds: 450));
   }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: Text('Add note'),
+        content: content(),
+        elevation: 16.0,
+        actions: [
+          FlatButton(
+              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+          FlatButton(onPressed: onAffirmativePressed, child: Text('Add')),
+        ],
+      );
 }

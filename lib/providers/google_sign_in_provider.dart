@@ -19,6 +19,7 @@ class GoogleSignInProvider {
 
   ///This could  return null
   Future<GoogleSignInAccount> get signIn async {
+    
     GoogleSignInAccount _user = await _googleSignIn.signIn();
     
     if (_user != null) _currentUser = _user;

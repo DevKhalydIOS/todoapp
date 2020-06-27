@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:state_managment_todoapp/database_moor/moor_database.dart';
 import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
 import 'package:state_managment_todoapp/utils/utils_functios.dart';
+import 'package:state_managment_todoapp/widgets/alert_task.dart';
 import 'package:state_managment_todoapp/widgets/checkbox_tile_custom.dart';
-import 'package:state_managment_todoapp/widgets/design_bottom_sheet.dart';
+import 'package:state_managment_todoapp/widgets/edit_data.dart';
 
 //This screen will be become in stateless
 class TaskScreen extends StatefulWidget {
@@ -15,10 +16,6 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-
-  
-  final _listKey = GlobalKey<AnimatedListState>();
-
   final keyScaffold = new GlobalKey<ScaffoldState>();
 
   double widht, height;
@@ -33,9 +30,13 @@ class _TaskScreenState extends State<TaskScreen> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void setupOfflineMode() {
     //When the app is on mode offline use this flow
-    bool isAlreadyUpdate = false;
 
     streamsTasks = Provider.of<DatabaseNotifier>(context, listen: false)
         .database
@@ -46,30 +47,6 @@ class _TaskScreenState extends State<TaskScreen> {
           .updateTotalTask(list.length);
 
       tasksOutside = list;
-
-      //TODO: Fix this code (Erase this code)
-      if (!isAlreadyUpdate) {
-        isAlreadyUpdate = !isAlreadyUpdate;
-
-        //Get the list to delete
-        List<Task> deleteList = list.where((e) => e.isComplete).toList();
-
-        //Position to delete. These positions are from list
-        List<int> positions = new List();
-
-        if (deleteList.isEmpty) return;
-
-        for (int i = 0; i < list.length; i++) {
-          final task = list[i];
-
-          for (int j = 0; j < deleteList.length; j++) {
-            if (task.id == deleteList[j].id) {
-              positions.add(i);
-              break;
-            }
-          }
-        }
-      }
     });
   }
 
@@ -87,39 +64,13 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   fab() => FloatingActionButton(
-        onPressed: () => showBottomSheetCustom(),
+        onPressed: () => showDialogCustom(context, AlertTasks()),
         backgroundColor: acentColor,
         child: Icon(
           Icons.add,
           color: Colors.white,
         ),
       );
-  //Edit this apparence
-  showBottomSheetCustom() => showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        builder: (c) => BottomSheetDesign(
-          onPressed: addAnItem,
-        ),
-      );
-
-  //Add a item to the task list
-  addAnItem(String task) async {
-    // Provider.of<TaskNotifier>(context).addAnItem();
-    final taskModel = new Task(
-      id: 'task_' + getDate(),
-      initDate: getDate(),
-      task: task,
-      isComplete: false,
-    );
-
-    await Provider.of<DatabaseNotifier>(context, listen: false)
-        .database
-        .insertTask(taskModel);
-    //Maybe this thown an error
-    _listKey.currentState.insertItem(0, duration: Duration(milliseconds: 450));
-    Navigator.pop(context);
-  }
 
   Widget str() => Column(
         children: <Widget>[
@@ -197,11 +148,10 @@ class _TaskScreenState extends State<TaskScreen> {
                 ),
               );
 
-            return AnimatedList(
-              key: _listKey,
+            return ListView.builder(
               padding: EdgeInsets.only(top: 25),
               itemBuilder: itemBuilder,
-              initialItemCount: tasksOutside.length,
+              itemCount: tasks.length,
             );
           } else {
             if (!snapshot.hasData &&
@@ -218,8 +168,7 @@ class _TaskScreenState extends State<TaskScreen> {
         },
       );
 
-  Widget itemBuilder(BuildContext _, int i, animation) {
-    
+  Widget itemBuilder(BuildContext _, int i) {
 
     var reversedList = new List.from(tasksOutside.reversed);
 
@@ -227,13 +176,9 @@ class _TaskScreenState extends State<TaskScreen> {
 
     bool isComplete = item.isComplete;
 
-    final myTween = Tween<Offset>(
-      begin: const Offset(-1.0, 0.0),
-      end: Offset.zero,
-    );
-
-    return SlideTransition(
-      position: animation.drive(myTween),
+    return GestureDetector(
+      onLongPress: () =>
+      showDialogCustom(context, EditDataAlert(item)),
       child: CheckBoxTile(
         isComplete: isComplete,
         task: item.task,

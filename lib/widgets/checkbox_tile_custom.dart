@@ -40,6 +40,7 @@ class _CheckBoxTileState extends State<CheckBoxTile> {
   @override
   Widget build(BuildContext context) => CheckboxListTile(
         value: isComplete,
+        
         onChanged: (value) async {
 
           setState(() {

@@ -135,26 +135,9 @@ class _SplashScreenState extends State<SplashScreen> {
           return;
         }
 
-        //Update the local storage
-        Provider.of<GoogleNotifier>(context, listen: false).user = _user;
+        //Updating provider and the local storage
+        await signInGoogleUser(context, _user, user);
 
-        //The idtoken could be diffent so this can throw an error
-        String userID = _user.id;
-
-        UserDataData _updateUser = user.copyWith(
-          id: userID,
-          isGoogleSignIn: true,
-        );
-
-        //Updating the local db
-        await Provider.of<DatabaseNotifier>(context, listen: false)
-            .database
-            .updateDataUser(_updateUser);
-
-        //When the local user is update in the db also this should be update into the Provider
-        Provider.of<DatabaseNotifier>(context, listen: false)
-            .updateInfoUserLocal(_updateUser);
-            
       }
       isFinished = true;
     }

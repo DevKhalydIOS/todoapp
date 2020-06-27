@@ -6,10 +6,12 @@ class GoogleNotifier extends ChangeNotifier {
   GoogleSignInAccount _currentUser;
 
   set user(GoogleSignInAccount u) => _currentUser = u;
+
+  ///This getter can be null
   GoogleSignInAccount get user => _currentUser ?? null;
 
 
-  //When the user make a signOut
-  void makeNullUserGoogle() => _currentUser = null;
+  ///When the user make a signOut
+  void signOutUserGoogle() => _currentUser = null;
   
 }

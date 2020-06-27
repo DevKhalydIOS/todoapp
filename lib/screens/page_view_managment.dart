@@ -22,7 +22,7 @@ class _PageViewManegmentState extends State<PageViewManegment> {
   final views = <Widget>[
     TaskScreen(),
     NotesScreen(),
-    SettingsFragment()
+    SettingsFragment(),
   ];
 
   @override

@@ -4,6 +4,7 @@ import 'package:state_managment_todoapp/database_moor/moor_database.dart';
 import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
 import 'package:state_managment_todoapp/utils/utils_functios.dart';
 import 'package:state_managment_todoapp/widgets/alert_notes.dart';
+import 'package:state_managment_todoapp/widgets/edit_data.dart';
 
 class NotesScreen extends StatefulWidget {
   @override
@@ -12,7 +13,6 @@ class NotesScreen extends StatefulWidget {
 
 class _NotesScreenState extends State<NotesScreen> {
   final keyScaffold = new GlobalKey<ScaffoldState>();
-  final _listKey = GlobalKey<AnimatedListState>();
 
   List<Note> notesOutside = new List();
 
@@ -29,7 +29,6 @@ class _NotesScreenState extends State<NotesScreen> {
           .updateTotalNotes(notes.length);
       notesOutside = notes;
     });
-
     super.initState();
   }
 
@@ -51,11 +50,7 @@ class _NotesScreenState extends State<NotesScreen> {
       );
 
   //Add a note to notes table
-  onPressed() => showDialogCustom(
-      context,
-      AlertNotes(
-        listKey: _listKey,
-      ));
+  onPressed() => showDialogCustom(context, AlertNotes());
 
   Widget str() => Column(
         children: <Widget>[
@@ -132,11 +127,10 @@ class _NotesScreenState extends State<NotesScreen> {
                 ),
               );
 
-            return AnimatedList(
-              key: _listKey,
+            return ListView.builder(
               padding: EdgeInsets.only(top: 25),
               itemBuilder: itemBuilder,
-              initialItemCount: notesOutside.length,
+              itemCount: notes.length,
             );
           } else {
             if (!snapshot.hasData) {
@@ -151,22 +145,18 @@ class _NotesScreenState extends State<NotesScreen> {
           }
         },
       );
-      
+
   //Try to fix else use normal listview
-  Widget itemBuilder(BuildContext _, int i, animation) {
+  Widget itemBuilder(BuildContext _, int i) {
     List<Note> reversedList = new List.from(notesOutside.reversed);
 
     final item = reversedList[i];
 
-    final myTween = Tween<Offset>(
-      begin: const Offset(-1.0, 0.0),
-      end: Offset.zero,
-    );
+    bool isHide = item.isHide;
 
-    return SlideTransition(
-        position: animation.drive(myTween),
-        child: ListTile(
-          title: Text(item.note),
-        ));
+    return !isHide ? ListTile(
+      title: Text(item.note),
+      onLongPress: () => showDialogCustom(context, EditDataAlert(item)),
+    ) : Container();
   }
 }

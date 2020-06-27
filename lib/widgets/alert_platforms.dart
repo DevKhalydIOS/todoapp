@@ -24,10 +24,11 @@ class AlertPlatform extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final androidMaterial = AlertDialog(
-      title: Text(title),
+      title: Text(title,textAlign: TextAlign.justify,),
       content: Text(description),
       elevation: 16.0,
       actions: [
+
         if (isVisibleNegativeBtn)
           FlatButton(
               onPressed: onNegativePressed ?? () => onNegative(context),
