@@ -28,7 +28,6 @@ class AlertPlatform extends StatelessWidget {
       content: Text(description),
       elevation: 16.0,
       actions: [
-
         if (isVisibleNegativeBtn)
           FlatButton(
               onPressed: onNegativePressed ?? () => onNegative(context),

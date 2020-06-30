@@ -15,14 +15,13 @@ part 'dao_app.g.dart';
 //DAO = Data Access Objects
 @UseDao(tables: [Tasks, Notes, UserData])
 class UserDAO extends DatabaseAccessor<AppDatabase> with _$UserDAOMixin {
-
   final AppDatabase db;
 
   UserDAO(this.db) : super(db);
-  
+
   //Fix by the docs https://moor.simonbinder.eu/docs/getting-started/writing_queries/
-  updateTask(Task task) async => await
-      (update(tasks)..where((t) => t.id.equals(task.id))).write(task);
+  updateTask(Task task) async =>
+      await (update(tasks)..where((t) => t.id.equals(task.id))).write(task);
 
   //Delete
   deleteTasksCompletes() => (delete(tasks)..where((t) => t.isComplete)).go();
@@ -38,13 +37,20 @@ class UserDAO extends DatabaseAccessor<AppDatabase> with _$UserDAOMixin {
   //Table name and the class
 
   //Note Functions
-  Future updateNote(Note note) async => await 
-      (update(notes)..where((t) => t.id.equals(note.id))).write(note);
+  Future updateNote(Note note) async =>
+      await (update(notes)..where((t) => t.id.equals(note.id))).write(note);
 
-  Future deleteUniqueNote(Note note) async => await
-      (delete(notes)..where((t) => t.id.equals(note.id))).delete(note);
+  Future updateHideNotes() async =>
+    await (update(notes)..where(($NotesTable t) => t.isHide)).write(NotesCompanion(
+      isHide: Value(false)
+    ));
 
-  Stream<List<Note>> watchNotes()   => select(notes).watch();
+  
+
+  Future deleteUniqueNote(Note note) async =>
+      await (delete(notes)..where((t) => t.id.equals(note.id))).delete(note);
+
+  Stream<List<Note>> watchNotes() => select(notes).watch();
 
   Future insertNote(Note note) async => await into(notes).insert(note);
 
@@ -55,11 +61,13 @@ class UserDAO extends DatabaseAccessor<AppDatabase> with _$UserDAOMixin {
   //table to avoid this type of erros
 
   ///Update all the table in this case that dont metters.
-  Future updateDataUser(UserDataData d) async => await update(userData).write(d);
+  Future updateDataUser(UserDataData d) async =>
+      await update(userData).write(d);
 
   ///Use a unique time
   Future insertUser(UserDataData d) async => await into(userData).insert(d);
 
   ///The first item should be the user to storage
-  Future<List<UserDataData>> getUserData() async => await select(userData).get();
+  Future<List<UserDataData>> getUserData() async =>
+      await select(userData).get();
 }

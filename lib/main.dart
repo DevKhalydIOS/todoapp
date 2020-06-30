@@ -11,7 +11,7 @@ void main() => runApp(InitApp());
 //Please read this blog https://www.pluralsight.com/guides/how-to-use-gitignore-file
 class InitApp extends StatelessWidget {
   //TO-DO
-  //SLOGAN: Let's TODO
+  //SLOGAN: "Let's "TODO"
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +21,7 @@ class InitApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         //Single Provider depends what to use
-        ChangeNotifierProvider<DatabaseNotifier>(
-            create: (_) => DatabaseNotifier()),
+        ChangeNotifierProvider<DatabaseNotifier>(create: (_) => DatabaseNotifier()),
         ChangeNotifierProvider<GoogleNotifier>(create: (_) => GoogleNotifier()),
         //If you need both notifiers you can use the proxy provider
         //The number 2 means the number of classes to use

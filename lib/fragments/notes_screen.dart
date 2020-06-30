@@ -14,12 +14,19 @@ class NotesScreen extends StatefulWidget {
 class _NotesScreenState extends State<NotesScreen> {
   final keyScaffold = new GlobalKey<ScaffoldState>();
 
+  bool isDarkMode = false;
+
   List<Note> notesOutside = new List();
 
   Stream<List<Note>> streamsNotes;
 
   @override
   void initState() {
+    
+    isDarkMode = Provider.of<DatabaseNotifier>(context, listen: false)
+        .userData
+        .isDarkMode;
+
     streamsNotes = Provider.of<DatabaseNotifier>(context, listen: false)
         .database
         .watchNotes();
@@ -35,7 +42,7 @@ class _NotesScreenState extends State<NotesScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         key: keyScaffold,
-        backgroundColor: primaryColor,
+        backgroundColor: !isDarkMode ? primaryColor : primaryColorDark,
         body: str(),
         floatingActionButton: fab(),
       );
@@ -154,9 +161,11 @@ class _NotesScreenState extends State<NotesScreen> {
 
     bool isHide = item.isHide;
 
-    return !isHide ? ListTile(
-      title: Text(item.note),
-      onLongPress: () => showDialogCustom(context, EditDataAlert(item)),
-    ) : Container();
+    return !isHide
+        ? ListTile(
+            title: Text(item.note),
+            onLongPress: () => showDialogCustom(context, EditDataAlert(item)),
+          )
+        : Container();
   }
 }

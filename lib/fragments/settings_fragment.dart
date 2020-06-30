@@ -1,19 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:state_managment_todoapp/database_moor/moor_database.dart';
 import 'package:state_managment_todoapp/notifiers/db_google_proxy.dart';
+import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
 import 'package:state_managment_todoapp/providers/google_sign_in_provider.dart';
 import 'package:state_managment_todoapp/utils/utils_functios.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:state_managment_todoapp/widgets/alert_platforms.dart';
 import 'package:state_managment_todoapp/widgets/custom_switch.dart';
 import 'package:state_managment_todoapp/widgets/space.dart';
 
-class SettingsFragment extends StatelessWidget {
-  BuildContext context;
-  final googleSignIn = new GoogleSignInProvider();
+class SettingsFragment extends StatefulWidget {
+  @override
+  _SettingsFragmentState createState() => _SettingsFragmentState();
+}
 
-  //Add a list
-  //https://stackoverflow.com/questions/21826342/is-there-a-simple-way-to-combine-two-lists-in-dart
+class _SettingsFragmentState extends State<SettingsFragment> {
+  bool isDarkMode;
+  final googleProvider = new GoogleSignInProvider();
+
+  @override
+  void initState() {
+
+    isDarkMode = Provider.of<DatabaseNotifier>(context, listen: false)
+            .userData
+            .isDarkMode ??
+        false;
+    
+    super.initState();
+  }
+
   Widget str() => SafeArea(
         child: SingleChildScrollView(
           child: Column(children: [
@@ -23,8 +40,8 @@ class SettingsFragment extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text('Settings',
                     style: TextStyle(
-                        color: Colors.black,
-                        fontSize: screenHeight(context) * 0.075,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: screenHeight(context) * 0.055,
                         fontWeight: FontWeight.bold)),
               ),
             ),
@@ -34,7 +51,6 @@ class SettingsFragment extends StatelessWidget {
         ),
       );
 
-  //Update UI
   Widget body() => Consumer<GoogleDatabaseProxy>(
         builder: (context, object, child) {
           //Contains the user local data
@@ -56,25 +72,39 @@ class SettingsFragment extends StatelessWidget {
                 child: Text(
                   'Sign in with Google to save in the cloud',
                   textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
                 ),
               ),
               Space(
                 space: 0.05,
               ),
               SignInButton(
-                Buttons.Google,
+                isDarkMode ? Buttons.GoogleDark : Buttons.Google,
                 text: "Sign in with Google",
                 onPressed: () async {
 
-                  GoogleSignInAccount user = await googleSignIn.signIn;
+                  GoogleSignInAccount user = await googleProvider.signIn;
 
                   if (user == null) {
-                    //Show an alert
+                    String title = 'An error has occurred';
+                    String description =
+                        'Looks like the connection with Google Servers failed. Please try again or check your internet connection';
+
+                    final alert = AlertPlatform(
+                      title: title,
+                      description: description,
+                      isVisibleNegativeBtn: false,
+                      textPositive: 'OK',
+                    );
+
+                    await showDialogCustom(context, alert);
+
                     return;
                   }
 
                   await signInGoogleUser(context, user, userData);
-              
                 },
               )
             ];
@@ -84,21 +114,27 @@ class SettingsFragment extends StatelessWidget {
             final googleData = [
               Space(),
               CircleAvatar(
-                radius: 30,
+                radius: 60,
                 backgroundImage: NetworkImage(userGoogle.photoUrl),
               ),
-              Space(),
+              Space(
+                space: 0.025,
+              ),
               Text(
                 userGoogle.displayName,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(userGoogle.email),
+              Space(
+                space: 0.025,
+              ),
               SignInButton(
                 Buttons.Google,
                 text: "Sign out",
-                onPressed: () {
-                  //Make provider method and son on with the local storage like signInGoogleUserMethod
-
+                onPressed: () async {
+                  await googleProvider.signOut();
+                  //Update Provider
+                  await signOutGoogleUser(context, userData);
                 },
               )
             ];
@@ -111,23 +147,32 @@ class SettingsFragment extends StatelessWidget {
             ),
             CustomSwitch(
               iconData: Icons.wb_sunny,
-              isActive: false,
+              isActive: userData.isDarkMode,
               text: 'Dark Mode',
-              onAction: (value) {
-                if (value) {
-                  print('DarkMode');
-                }
+              onAction: (isDarkMode) async {
+                //Getting the data and updating one field in this case DarkMode
+                UserDataData userUpdate =
+                    userData.copyWith(isDarkMode: isDarkMode);
+
+                //Updating the database
+                await Provider.of<DatabaseNotifier>(context, listen: false)
+                    .database
+                    //UserDataData data
+                    .updateDataUser(userUpdate);
+
+                //Updating provider
+                Provider.of<DatabaseNotifier>(context, listen: false)
+                    .updateInfoUserLocal(userUpdate);
               },
             ),
             Space(),
-            CustomSwitch(
-              iconData: Icons.visibility,
-              isActive: false,
-              text: 'Hide Notes',
-              onAction: (value) {
-                if (value) {
-                  print('Hide Notes');
-                }
+            ListTile(
+              title: Text('UnHide Notes'),
+              leading: Icon(Icons.visibility),
+              onTap: () async {
+                await Provider.of<DatabaseNotifier>(context, listen: false)
+                    .database
+                    .updateHideNotes();
               },
             ),
             Space(
@@ -151,16 +196,27 @@ class SettingsFragment extends StatelessWidget {
             'Rolando Garcia',
             style: TextStyle(
               fontWeight: FontWeight.bold,
+              color: isDarkMode ? Colors.black : Colors.white,
             ),
           ),
-          Text('jrdosmil10@gmail.com'),
+          Text('jrdosmil10@gmail.com',style: TextStyle(
+            color: isDarkMode ? Colors.black : Colors.white,
+          ),),
           Text('Mobile Developer')
         ],
       );
 
   @override
   Widget build(BuildContext c) {
-    context = c;
-    return Scaffold(body: str());
+
+    return Consumer<DatabaseNotifier>(builder: (context, db, child) {
+
+      isDarkMode = db.userData.isDarkMode;
+
+      return Scaffold(
+        body: str(),
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      );
+    });
   }
 }

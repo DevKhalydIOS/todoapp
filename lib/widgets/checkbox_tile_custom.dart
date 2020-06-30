@@ -9,9 +9,9 @@ class CheckBoxTile extends StatefulWidget {
 
 
   //This allow dont send any value by param
-  bool isComplete;
-  String task;
-  Task object;
+  final bool isComplete;
+  final String task;
+  final Task object;
 
 
   CheckBoxTile(

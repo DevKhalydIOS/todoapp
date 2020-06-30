@@ -496,6 +496,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
 }
 
 class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
+  
   final GeneratedDatabase _db;
   final String _alias;
   $NotesTable(this._db, [this._alias]);

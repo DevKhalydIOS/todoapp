@@ -7,7 +7,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:state_managment_todoapp/database_moor/moor_database.dart';
 import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
-import 'package:state_managment_todoapp/notifiers/google_notifier.dart';
 import 'package:state_managment_todoapp/providers/google_sign_in_provider.dart';
 import 'package:state_managment_todoapp/screens/page_view_managment.dart';
 import 'package:state_managment_todoapp/utils/utils_functios.dart';
@@ -24,6 +23,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   final googleSignIn = new GoogleSignInProvider();
 
+  bool isDarkMode = false;
+
   @override
   void initState() {
     Future.delayed(Duration(milliseconds: 1650), () async {
@@ -37,9 +38,17 @@ class _SplashScreenState extends State<SplashScreen> {
         debugPrint('Error');
       } else {
         //Saving the user info
-        Provider.of<DatabaseNotifier>(context, listen: false).userData = user;
+        Provider.of<DatabaseNotifier>(context, listen: false)
+            .updateInfoUserLocal(user);
+
+       
 
         bool userHasData = await isUserWithData();
+
+         isDarkMode = Provider.of<DatabaseNotifier>(context, listen: false)
+                .userData
+                .isDarkMode ??
+            false;
 
         debugPrint('THe user has data $userHasData');
 
@@ -63,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
         .database
         .getTasks();
 
-    return notes?.isNotEmpty ?? false || task?.isNotEmpty ?? false;
+    return notes.isNotEmpty ?? false || task.isNotEmpty ?? false;
   }
 
   Future showDialogs(UserDataData user) async {
@@ -137,7 +146,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
         //Updating provider and the local storage
         await signInGoogleUser(context, _user, user);
-
       }
       isFinished = true;
     }
@@ -151,7 +159,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: primaryColor,
+        backgroundColor: isDarkMode ? primaryColorDark : primaryColor,
         body: str(),
       );
 

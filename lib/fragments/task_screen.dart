@@ -24,8 +24,14 @@ class _TaskScreenState extends State<TaskScreen> {
 
   List<Task> tasksOutside = new List();
 
+  bool isDarkMode;
+
   @override
   void initState() {
+    isDarkMode = Provider.of<DatabaseNotifier>(context, listen: false)
+            .userData
+            .isDarkMode ??
+        false;
     setupOfflineMode();
     super.initState();
   }
@@ -57,7 +63,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
     return Scaffold(
       key: keyScaffold,
-      backgroundColor: primaryColor,
+      backgroundColor: isDarkMode ? primaryColorDark : primaryColor,
       body: str(),
       floatingActionButton: fab(),
     );
@@ -169,7 +175,6 @@ class _TaskScreenState extends State<TaskScreen> {
       );
 
   Widget itemBuilder(BuildContext _, int i) {
-
     var reversedList = new List.from(tasksOutside.reversed);
 
     final item = reversedList[i];
@@ -177,8 +182,7 @@ class _TaskScreenState extends State<TaskScreen> {
     bool isComplete = item.isComplete;
 
     return GestureDetector(
-      onLongPress: () =>
-      showDialogCustom(context, EditDataAlert(item)),
+      onLongPress: () => showDialogCustom(context, EditDataAlert(item)),
       child: CheckBoxTile(
         isComplete: isComplete,
         task: item.task,

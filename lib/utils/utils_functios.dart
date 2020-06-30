@@ -14,6 +14,9 @@ Color primaryColor = Colors.green;
 
 Color acentColor = Colors.lightGreen;
 
+Color primaryColorDark = Colors.black87;
+
+
 nextPageRemoveStack(BuildContext context, String pageTag) =>
     Navigator.pushReplacementNamed(
       context,
@@ -34,24 +37,45 @@ Future<dynamic> showDialogCustom(BuildContext context, Widget dialog,
 ///UserGoogle is the current user
 Future signInGoogleUser(BuildContext context, GoogleSignInAccount userGoogle,
     UserDataData userLocal) async {
+
   //Update the provider
-  Provider.of<GoogleNotifier>(context, listen: false).user = userGoogle;
+  Provider.of<GoogleNotifier>(context, listen: false).signInUserGoogle(userGoogle);
 
   //The idtoken could be diffent so this can throw an error
   String userID = userGoogle.id;
 
+  //Updating the local db
   UserDataData _updateUser = userLocal.copyWith(
     id: userID,
     isGoogleSignIn: true,
   );
 
-  //Updating the local db
   await Provider.of<DatabaseNotifier>(context, listen: false)
       .database
       .updateDataUser(_updateUser);
-
+  
   //Updating the provider with the new data
   Provider.of<DatabaseNotifier>(context, listen: false)
       .updateInfoUserLocal(_updateUser);
 }
-//TODO: To maje the counter thing you should make the counter thingg of this
+
+///This method make the same thing that the above method but a opposite way
+Future signOutGoogleUser(BuildContext context, UserDataData userLocal) async {
+
+  Provider.of<GoogleNotifier>(context, listen: false).signOutUserGoogle();
+
+  //The new object
+  UserDataData u = userLocal.copyWith(
+    id: 'user_' + getDate(),
+    isGoogleSignIn: false,
+  );
+
+
+  //Updating in provider and in the local storage
+  await Provider.of<DatabaseNotifier>(context, listen: false).database
+      .updateDataUser(u);
+
+   Provider.of<DatabaseNotifier>(context, listen: false)
+      .updateInfoUserLocal(u);
+
+}

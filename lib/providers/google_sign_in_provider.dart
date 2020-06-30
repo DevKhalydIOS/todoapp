@@ -11,6 +11,7 @@ class GoogleSignInProvider {
     ],
   );
 
+  ///If this returns null the signOut method is not workin
   Future<GoogleSignInAccount> signOut() async =>
       await _googleSignIn.disconnect();
 

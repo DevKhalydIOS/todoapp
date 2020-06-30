@@ -5,7 +5,8 @@ import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
 import 'package:state_managment_todoapp/widgets/alert_platforms.dart';
 
 class EditDataAlert extends StatefulWidget {
-  Object data;
+  
+  final Object data;
 
   EditDataAlert(this.data);
 
