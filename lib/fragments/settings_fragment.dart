@@ -22,12 +22,11 @@ class _SettingsFragmentState extends State<SettingsFragment> {
 
   @override
   void initState() {
-
     isDarkMode = Provider.of<DatabaseNotifier>(context, listen: false)
             .userData
             .isDarkMode ??
         false;
-    
+
     super.initState();
   }
 
@@ -84,7 +83,6 @@ class _SettingsFragmentState extends State<SettingsFragment> {
                 isDarkMode ? Buttons.GoogleDark : Buttons.Google,
                 text: "Sign in with Google",
                 onPressed: () async {
-
                   GoogleSignInAccount user = await googleProvider.signIn;
 
                   if (user == null) {
@@ -122,14 +120,22 @@ class _SettingsFragmentState extends State<SettingsFragment> {
               ),
               Text(
                 userGoogle.displayName,
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
               ),
-              Text(userGoogle.email),
+              Text(
+                userGoogle.email,
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
               Space(
                 space: 0.025,
               ),
               SignInButton(
-                Buttons.Google,
+                isDarkMode ? Buttons.GoogleDark : Buttons.Google,
                 text: "Sign out",
                 onPressed: () async {
                   await googleProvider.signOut();
@@ -167,8 +173,11 @@ class _SettingsFragmentState extends State<SettingsFragment> {
             ),
             Space(),
             ListTile(
-              title: Text('UnHide Notes'),
-              leading: Icon(Icons.visibility),
+              title: Text('Unhide Notes',
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.black : Colors.white,
+                  )),
+              leading: Icon(Icons.visibility,color: isDarkMode ? Colors.white : Colors.grey),
               onTap: () async {
                 await Provider.of<DatabaseNotifier>(context, listen: false)
                     .database
@@ -199,18 +208,22 @@ class _SettingsFragmentState extends State<SettingsFragment> {
               color: isDarkMode ? Colors.black : Colors.white,
             ),
           ),
-          Text('jrdosmil10@gmail.com',style: TextStyle(
-            color: isDarkMode ? Colors.black : Colors.white,
-          ),),
-          Text('Mobile Developer')
+          Text(
+            'jrdosmil10@gmail.com',
+            style: TextStyle(
+              color: isDarkMode ? Colors.black : Colors.white,
+            ),
+          ),
+          Text('Mobile Developer',
+              style: TextStyle(
+                color: isDarkMode ? Colors.black : Colors.white,
+              ))
         ],
       );
 
   @override
   Widget build(BuildContext c) {
-
     return Consumer<DatabaseNotifier>(builder: (context, db, child) {
-
       isDarkMode = db.userData.isDarkMode;
 
       return Scaffold(

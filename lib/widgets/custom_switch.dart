@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:state_managment_todoapp/notifiers/db_notifier.dart';
 
 class CustomSwitch extends StatefulWidget {
   final bool isActive;
@@ -32,17 +34,26 @@ class _CustomSwitchState extends State<CustomSwitch> {
   }
 
   @override
-  Widget build(BuildContext context) => SwitchListTile(
-        title: Text(text),
-        value: isActive,
-        secondary: Icon(iconData),
-        onChanged: (bool value) {
-          if (onAction != null) {
-            onAction(value);
-          }
-          setState(() {
-            isActive = value;
-          });
+  Widget build(BuildContext context) => Consumer<DatabaseNotifier>(
+        builder: (context, db, child) {
+
+          final isDarkMode = db.userData.isDarkMode;
+
+          return SwitchListTile(
+            title: Text(text,style: TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black
+            ),),
+            value: isActive,
+            secondary: Icon(iconData,color: isDarkMode ? Colors.white : Colors.grey,),
+            onChanged: (bool value) {
+              if (onAction != null) {
+                onAction(value);
+              }
+              setState(() {
+                isActive = value;
+              });
+            },
+          );
         },
       );
 }

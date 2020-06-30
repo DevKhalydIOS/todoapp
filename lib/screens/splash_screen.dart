@@ -21,6 +21,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+  
   final googleSignIn = new GoogleSignInProvider();
 
   bool isDarkMode = false;
