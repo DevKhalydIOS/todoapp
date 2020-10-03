@@ -11,6 +11,14 @@ My TODO App made with Flutter
 
 ### Create the dabase
 
+Before you should check the .yaml file to check what libraries should be use
+
+**In flutter 1.20 you should use this dependecy_override**
+```yaml
+dependency_overrides:
+  analyzer: '0.39.14'
+```
+
 **Note**: We need to add a line like this:
 
 ```dart
